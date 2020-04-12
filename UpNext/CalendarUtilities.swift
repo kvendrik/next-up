@@ -33,9 +33,13 @@ struct CalendarUtilities {
         }
     }
     
-    func prettyTimeUntilEvent(_ event: EKEvent) -> String {
+    func timeUntilEvent(_ event: EKEvent) -> DateComponents {
         let calendar = Calendar.current
-        let timeUntil = calendar.dateComponents([.hour, .minute, .second], from: Date(), to: event.startDate)
+        return calendar.dateComponents([.hour, .minute, .second], from: Date(), to: event.startDate)
+    }
+    
+    func prettyTimeUntilEvent(_ event: EKEvent) -> String {
+        let timeUntil = timeUntilEvent(event)
         var timeString = ""
         
         let hour = timeUntil.hour!
@@ -44,12 +48,46 @@ struct CalendarUtilities {
         if hour > 0 {
             timeString = " in "+String(hour)+pluralize(hour, " hour")
         } else if minute > 0 {
-            timeString = " in "+String(minute)+pluralize(minute, " minute")
+            timeString = " in "+String(minute)+" min"
         } else {
             timeString = " now"
         }
 
         return event.title+timeString
+    }
+    
+    func getNextEvent(_ events: [EKEvent]) -> EKEvent? {
+        if events.isEmpty {
+            return nil
+        }
+
+        let currentOrNextEvent = events[0]
+        let currentDate = Date()
+        let startPlusTenMinutes = Calendar.current.date(byAdding: .minute, value: 10, to: currentOrNextEvent.startDate)
+        let hasEventAfterImmidiateNext = events.indices.contains(1)
+        
+        if currentDate > startPlusTenMinutes! {
+            return hasEventAfterImmidiateNext ? events[1] : nil
+        }
+        
+        return events[0]
+    }
+    
+    func getHangoutsLinkFromEvent(_ event: EKEvent) -> URL? {
+        if event.notes == nil {
+            return nil
+        }
+
+        let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        let matches = detector.matches(in: event.notes!, options: [], range: NSRange(location: 0, length: event.notes!.utf16.count))
+        
+        for match in matches {
+            if match.url?.host == "hangouts.google.com" || match.url?.host == "meet.google.com" {
+                return match.url
+            }
+        }
+        
+        return nil
     }
     
     private func pluralize(_ amount: Int, _ str: String) -> String {
