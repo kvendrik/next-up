@@ -58,6 +58,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         switchToCalendar(selectedCalendars!, events: events)
     }
     
+    @objc private func handleJoinMeetingUrlShortcut() {
+        print("hello")
+    }
+    
     private func switchToCalendar(_ calendars: [EKCalendar], events: [EKEvent]) {
         let nextEvent = utilities.getNextEvent(events)
         let menu = statusItem.menu!
@@ -65,8 +69,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.title = nextEvent == nil ? "No upcoming meetings" : utilities.prettyTimeUntilEvent(nextEvent!)
 
         for item in menu.items {
-            if item.representedObject as? String == "event" {
-                menu.removeItem(item)
+            if let details = item.representedObject as? NSDictionary {
+                if (details["type"] as! String == "event") {
+                    menu.removeItem(item)
+                }
             }
         }
         
@@ -79,8 +85,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         
-        print(nextEvent?.location)
-        print(utilities.getHangoutsLinkFromEvent(nextEvent!))
+        
+        let joinMeetingItem = menu.item(withTitle: "Join via Google Meet...")!
+        joinMeetingItem.action = nil
+
+        if nextEvent != nil {
+            if utilities.getHangoutsLinkFromEvent(nextEvent!) != nil {
+                joinMeetingItem.action = #selector(joinNextEventMeetingUrl)
+            }
+        }
         
         let eventsTitleItemIndex = menu.indexOfItem(withTitle: "Up Next") + 1
 
@@ -92,6 +105,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         self.events = events
         self.nextEvent = nextEvent
+    }
+    
+    @objc private func joinNextEventMeetingUrl(_ item: NSMenuItem) {
+        if (nextEvent == nil) {
+            return
+        }
+        
+        let meetingUrl = utilities.getHangoutsLinkFromEvent(nextEvent!)!
+        NSWorkspace.shared.open(meetingUrl)
     }
     
     @objc private func validateNextEventData() {
@@ -136,9 +158,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func constructMainMenuSkeleton(calendarsMenu: NSMenu, events: [EKEvent]) -> NSMenu {
         let menu = NSMenu()
         let calendarsItem = NSMenuItem(title: "Calendars", action: nil, keyEquivalent: "")
-        let joinGoogleMeetItem = NSMenuItem(title: "Join via Google Meet...", action: nil, keyEquivalent: "J")
-        
-        joinGoogleMeetItem.representedObject = "join_meet"
+        let joinGoogleMeetItem = NSMenuItem(title: "Join via Google Meet...", action: nil, keyEquivalent: "j")
         
         menu.addItem(joinGoogleMeetItem)
         menu.addItem(NSMenuItem.separator())
@@ -169,8 +189,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         for event in events {
             let time = dateFormatter.string(from: event.startDate)
-            let item = NSMenuItem(title: time+" - "+event.title, action: nil, keyEquivalent: "")
-            item.representedObject = "event"
+            let meetingUrl = utilities.getHangoutsLinkFromEvent(event)
+            let item = NSMenuItem(title: time+" - "+event.title, action: meetingUrl == nil ? nil : #selector(openEventMeetingUrl), keyEquivalent: "")
+
+            // TODO: change this if statement to something more compact
+            item.representedObject = ["type": "event", "meetingUrl": meetingUrl as Any]
+            
             menuItems.append(item)
         }
         
@@ -189,6 +213,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         return calendarsMenu
+    }
+    
+    @IBAction private func openEventMeetingUrl(_ item: NSMenuItem) {
+        if let details = item.representedObject as? Dictionary<String, Any> {
+            if let meetingUrl = details["meetingUrl"] as? URL {
+                NSWorkspace.shared.open(meetingUrl)
+            }
+        }
     }
     
     @IBAction private func toggleCalendarItemState(_ item: NSMenuItem) {

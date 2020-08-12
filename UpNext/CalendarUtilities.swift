@@ -10,6 +10,10 @@ import EventKit
 
 struct CalendarUtilities {
     func getEventsForRestOfDay(calendars: [EKCalendar], store: EKEventStore) -> [EKEvent] {
+        if calendars.count == 0 {
+            return []
+        }
+        
         var endOfDayDateComponent = DateComponents()
         endOfDayDateComponent.day = 1
         endOfDayDateComponent.second = -1
