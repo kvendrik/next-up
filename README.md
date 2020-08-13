@@ -1,6 +1,6 @@
 # Next Up
 
-__A quick overview of your meetings for the day.__
+A quick overview of your meetings for the day. [Download](Next Up.zip)
 
 ![Top bar with menu showing that display all meetings for the day](assets/preview.png)
 
