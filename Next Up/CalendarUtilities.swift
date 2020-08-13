@@ -26,13 +26,14 @@ struct CalendarUtilities {
         return events
     }
     
-    func requestCalendarAccess(store: EKEventStore, onAccess: @escaping () -> Void) {
+    func requestCalendarAccess(store: EKEventStore, onAccess: @escaping () -> Void, onError: @escaping () -> Void) {
         store.requestAccess(to: EKEntityType.event) { (granted: Bool, error: Optional<Error>) -> () in
             if granted {
                 print("Got access")
                 onAccess()
             } else {
-                print("The app is not permitted to access the calendar, make sure to grant permission in the settings and try again")
+                print("No access")
+                onError()
             }
         }
     }

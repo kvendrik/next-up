@@ -27,7 +27,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         statusItem.button?.target = self
-        utilities.requestCalendarAccess(store: store) {
+        utilities.requestCalendarAccess(store: store, onAccess:  {
             DispatchQueue.main.async {
                 let calendars = self.store.calendars(for: .event)
 
@@ -46,7 +46,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.switchToCalendar(selectedCalendars, events: events)
                 NotificationCenter.default.addObserver(self, selector: #selector(self.handleCalendarUpdate), name: .EKEventStoreChanged, object: self.store)
             }
-        }
+        }, onError: {
+            DispatchQueue.main.async {
+                let alert = NSAlert()
+                alert.messageText = "Next Up is not permitted to access the calendar, make sure to grant permission in your System Preferences.\n\nGo to Apple menu > System Preferences > Security & Privacy > Calendars and make sure ’Next Up’ is checked."
+                alert.alertStyle = .critical
+                alert.addButton(withTitle: "OK")
+                alert.runModal()
+                self.quitApplication()
+            }
+        })
     }
     
     @objc private func handleCalendarUpdate() {
@@ -180,7 +189,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc private func openAboutLink() {
-        NSWorkspace.shared.open(URL(string: "https://github.com/kvendrik/up-next")!)
+        NSWorkspace.shared.open(URL(string: "https://github.com/kvendrik/next-up")!)
     }
     
     @objc private func openGoogleCalendar() {
