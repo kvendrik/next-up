@@ -6,6 +6,15 @@
 //  Copyright © 2020 Koen Vendrik. All rights reserved.
 //
 
+/*
+ TODO:
+ - Global hotkey to join Google Meet
+ - Remember selected calendars between startups
+ - Open at startup
+ - New name + icon + proper README
+ - Optimize memory consumption
+*/
+
 import EventKit
 
 struct CalendarUtilities {
@@ -57,7 +66,7 @@ struct CalendarUtilities {
             timeString = " now"
         }
 
-        return event.title+timeString
+        return timeString
     }
     
     func getNextEvent(_ events: [EKEvent]) -> EKEvent? {
@@ -65,16 +74,41 @@ struct CalendarUtilities {
             return nil
         }
 
-        let currentOrNextEvent = events[0]
+        let currentOrNextEvent = findNextEvent(events, skip: 0)!
         let currentDate = Date()
-        let startPlusTenMinutes = Calendar.current.date(byAdding: .minute, value: 10, to: currentOrNextEvent.startDate)
-        let hasEventAfterImmidiateNext = events.indices.contains(1)
         
-        if currentDate > startPlusTenMinutes! {
-            return hasEventAfterImmidiateNext ? events[1] : nil
+        let calendar = Calendar.current
+        let eventDuration = calendar.dateComponents([.minute], from: currentOrNextEvent.startDate, to: currentOrNextEvent.endDate)
+        let startPlusPercentageDuration = Calendar.current.date(byAdding: .minute, value: eventDuration.minute! / 3, to: currentOrNextEvent.startDate)
+        
+        if currentDate > startPlusPercentageDuration! {
+            if let nextCurrentOrNextEvent = findNextEvent(events, skip: 1) {
+                return nextCurrentOrNextEvent
+            } else {
+                return nil
+            }
         }
         
-        return events[0]
+        return currentOrNextEvent
+    }
+    
+    private func findNextEvent(_ events: [EKEvent], skip: Int) -> EKEvent? {
+        var currentIndex = 0
+        var skippedCount = 0
+
+        while events[currentIndex].isAllDay || skippedCount != skip {
+            if !events[currentIndex].isAllDay {
+                skippedCount += 1
+            }
+            
+            currentIndex += 1
+            
+            if currentIndex >= events.count {
+                return nil
+            }
+        }
+        
+        return events[currentIndex]
     }
     
     func getHangoutsLinkFromEvent(_ event: EKEvent) -> URL? {

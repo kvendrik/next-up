@@ -48,25 +48,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
-
-    func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
-    }
     
     @objc private func handleCalendarUpdate() {
         let events = utilities.getEventsForRestOfDay(calendars: selectedCalendars!, store: self.store)
         switchToCalendar(selectedCalendars!, events: events)
     }
     
-    @objc private func handleJoinMeetingUrlShortcut() {
-        print("hello")
+    private func updateTopBarButtonTextForEvent(_ event: EKEvent?) {
+        if event == nil {
+            statusItem.button?.title = "No upcoming meetings"
+            return
+        }
+        
+        let prettyTime = utilities.prettyTimeUntilEvent(event!)
+        let locationLabel = parseLocation(event?.location) ?? ""
+        
+        statusItem.button?.title = (event?.title ?? "")+prettyTime+locationLabel
     }
     
     private func switchToCalendar(_ calendars: [EKCalendar], events: [EKEvent]) {
         let nextEvent = utilities.getNextEvent(events)
         let menu = statusItem.menu!
         
-        statusItem.button?.title = nextEvent == nil ? "No upcoming meetings" : utilities.prettyTimeUntilEvent(nextEvent!)
+        updateTopBarButtonTextForEvent(nextEvent)
 
         for item in menu.items {
             if let details = item.representedObject as? NSDictionary {
@@ -124,7 +128,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         
-        statusItem.button?.title = utilities.prettyTimeUntilEvent(nextEvent!)
+        updateTopBarButtonTextForEvent(nextEvent)
         
         let interval = getEfficientNextEventTimerInterval(nextEvent!)
         
@@ -170,6 +174,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.setSubmenu(calendarsMenu, for: calendarsItem)
 
         menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "About Up Next", action: #selector(openAboutLink), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: ""))
         
         return menu
@@ -177,6 +182,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc private func quitApplication() {
         NSApplication.shared.terminate(self)
+    }
+    
+    @objc private func openAboutLink() {
+        NSWorkspace.shared.open(URL(string: "https://github.com/kvendrik/up-next")!)
+    }
+    
+    @objc private func openGoogleCalendar() {
+        NSWorkspace.shared.open(URL(string: "https://calendar.google.com/calendar/r/week")!)
     }
     
     private func constructEventItems(_ events: [EKEvent]) -> [NSMenuItem] {
@@ -188,17 +201,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dateFormatter.dateStyle = .none
         
         for event in events {
+            if event.isAllDay {
+                continue
+            }
+
             let time = dateFormatter.string(from: event.startDate)
             let meetingUrl = utilities.getHangoutsLinkFromEvent(event)
-            let item = NSMenuItem(title: time+" - "+event.title, action: meetingUrl == nil ? nil : #selector(openEventMeetingUrl), keyEquivalent: "")
+            
+            let locationLabel = parseLocation(event.location) ?? ""
+            let item = NSMenuItem(title: time+" - "+event.title+locationLabel, action: meetingUrl == nil ? #selector(openGoogleCalendar) : #selector(openEventMeetingUrl), keyEquivalent: "")
 
-            // TODO: change this if statement to something more compact
             item.representedObject = ["type": "event", "meetingUrl": meetingUrl as Any]
             
             menuItems.append(item)
         }
         
         return menuItems
+    }
+    
+    private func parseLocation(_ location: String?) -> String? {
+        if let parts = location?.components(separatedBy: ", ") {
+            return " ("+parts[0]+")"
+        }
+        return nil
     }
     
     private func constructCalendarsMenu(calendars: [EKCalendar], selectedCalendars: [EKCalendar]) -> NSMenu {
