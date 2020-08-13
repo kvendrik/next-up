@@ -6,15 +6,6 @@
 //  Copyright © 2020 Koen Vendrik. All rights reserved.
 //
 
-/*
- TODO:
- - Global hotkey to join Google Meet
- - Remember selected calendars between startups
- - Open at startup
- - New name + icon + proper README
- - Optimize memory consumption
-*/
-
 import EventKit
 
 struct CalendarUtilities {
@@ -41,7 +32,7 @@ struct CalendarUtilities {
                 print("Got access")
                 onAccess()
             } else {
-                print("The app is not permitted to access reminders, make sure to grant permission in the settings and try again")
+                print("The app is not permitted to access the calendar, make sure to grant permission in the settings and try again")
             }
         }
     }

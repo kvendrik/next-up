@@ -196,7 +196,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dateFormatter.dateStyle = .none
         
         for event in events {
-            print(event)
             if event.isAllDay {
                 continue
             }

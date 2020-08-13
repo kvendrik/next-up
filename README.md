@@ -9,5 +9,10 @@ All credit for the idea behind this app goes to [Ellen Li](https://ellen.li). In
 
 So what did I change?
 - Added multi-calendar support
-- Added "Open at login" option (_coming soon_)
 - Left out the "Present via Google Meet" option
+
+## Roadmap
+- [ ] Remember selected calendars between startups
+- [ ] Add open at startup option
+- [ ] Optimize memory consumption
+- [ ] Add v1 release
