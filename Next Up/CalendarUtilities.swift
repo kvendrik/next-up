@@ -84,8 +84,6 @@ struct CalendarUtilities {
         if currentDate > startPlusPercentageDuration! {
             if let nextCurrentOrNextEvent = findNextEvent(events, skip: 1) {
                 return nextCurrentOrNextEvent
-            } else {
-                return nil
             }
         }
         

@@ -7,8 +7,8 @@
 //
 
 // TODO:
-// - Add location to events
-// - Add Join hangout link option for current ongoing event
+// - X Add location to events
+// - Add Join hangout shortcut for current ongoing event
 // - Optimize perf (no unneccesary runs or checks in timer, also do we need the timer?)
 // - Learn about testing
 
@@ -85,18 +85,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             currentTimer = nil
         }
         
-        if nextEvent == nil {
-            return
-        }
-        
-        
         let joinMeetingItem = menu.item(withTitle: "Join via Google Meet...")!
         joinMeetingItem.action = nil
-
-        if nextEvent != nil {
-            if utilities.getHangoutsLinkFromEvent(nextEvent!) != nil {
-                joinMeetingItem.action = #selector(joinNextEventMeetingUrl)
-            }
+        
+        if nextEvent != nil && utilities.getHangoutsLinkFromEvent(nextEvent!) != nil {
+            joinMeetingItem.action = #selector(joinNextEventMeetingUrl)
         }
         
         let eventsTitleItemIndex = menu.indexOfItem(withTitle: "Next Up") + 1
@@ -105,7 +98,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             menu.insertItem(eventItem, at: eventsTitleItemIndex + index)
         }
         
-        currentTimer = getNextEventValidationTimer(getEfficientNextEventTimerInterval(nextEvent!))
+        if nextEvent != nil {
+            currentTimer = getNextEventValidationTimer(getEfficientNextEventTimerInterval(nextEvent!))
+        }
 
         self.events = events
         self.nextEvent = nextEvent
@@ -118,6 +113,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let meetingUrl = utilities.getHangoutsLinkFromEvent(nextEvent!)!
         NSWorkspace.shared.open(meetingUrl)
+    }
+    
+    private func getNextEventValidationTimer(_ interval: Double) -> Timer {
+        return Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(validateNextEventData), userInfo: nil, repeats: true)
     }
     
     @objc private func validateNextEventData() {
@@ -136,10 +135,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             currentTimer?.invalidate()
             currentTimer = getNextEventValidationTimer(interval)
         }
-    }
-    
-    private func getNextEventValidationTimer(_ interval: Double) -> Timer {
-        return Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(validateNextEventData), userInfo: nil, repeats: true)
     }
     
     private func getEfficientNextEventTimerInterval(_ event: EKEvent) -> Double {
@@ -167,14 +162,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(joinGoogleMeetItem)
         menu.addItem(NSMenuItem.separator())
 
-        menu.addItem(NSMenuItem(title: "Up Next", action: nil, keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Next Up", action: nil, keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         
         menu.addItem(calendarsItem)
         menu.setSubmenu(calendarsMenu, for: calendarsItem)
 
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "About Up Next", action: #selector(openAboutLink), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "About Next Up", action: #selector(openAboutLink), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: ""))
         
         return menu
@@ -201,6 +196,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dateFormatter.dateStyle = .none
         
         for event in events {
+            print(event)
             if event.isAllDay {
                 continue
             }
