@@ -24,18 +24,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let utilities = CalendarUtilities()
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let store = EKEventStore()
+    private let userDefaults: UserDefaults = UserDefaults()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         statusItem.button?.target = self
         utilities.requestCalendarAccess(store: store, onAccess:  {
             DispatchQueue.main.async {
                 let calendars = self.store.calendars(for: .event)
+                let selectedCalendars = self.getSelectedCalendars(calendars)
 
-                if calendars.isEmpty {
-                    return;
-                }
-                
-                let selectedCalendars = [calendars.first(where: { $0.calendarIdentifier == self.store.defaultCalendarForNewEvents?.calendarIdentifier })!]
                 let calendarsMenu = self.constructCalendarsMenu(calendars: calendars, selectedCalendars: selectedCalendars)
                 
                 let events = self.utilities.getEventsForRestOfDay(calendars: selectedCalendars, store: self.store)
@@ -56,6 +53,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.quitApplication()
             }
         })
+    }
+    
+    private func getSelectedCalendars(_ calendars: [EKCalendar]) -> [EKCalendar] {
+        if let selectedCalendarIds = self.userDefaults.stringArray(forKey: "selectedCalendars") {
+            return calendars.filter { (calendar: EKCalendar) -> Bool in
+                selectedCalendarIds.contains(where: {$0 == calendar.calendarIdentifier})
+            }
+        }
+        
+        if let defaultCalendarId = self.store.defaultCalendarForNewEvents?.calendarIdentifier {
+            if let defaultCalendar = calendars.first(where: { $0.calendarIdentifier == defaultCalendarId }) {
+                return [defaultCalendar]
+            }
+        }
+        
+        return []
+    }
+    
+    private func setSelectedCalendars(_ calendars: [EKCalendar]) {
+        userDefaults.set(calendars.map { $0.calendarIdentifier }, forKey: "selectedCalendars")
     }
     
     @objc private func handleCalendarUpdate() {
@@ -113,6 +130,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         self.events = events
         self.nextEvent = nextEvent
+        
+        setSelectedCalendars(calendars)
     }
     
     @objc private func joinNextEventMeetingUrl(_ item: NSMenuItem) {
