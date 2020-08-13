@@ -99,7 +99,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         
-        let eventsTitleItemIndex = menu.indexOfItem(withTitle: "Up Next") + 1
+        let eventsTitleItemIndex = menu.indexOfItem(withTitle: "Next Up") + 1
 
         for (index, eventItem) in constructEventItems(events).enumerated() {
             menu.insertItem(eventItem, at: eventsTitleItemIndex + index)
