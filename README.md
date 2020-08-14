@@ -17,6 +17,5 @@
 ## Roadmap
 - [ ] Add open at startup option
 - [ ] Make Command + J hotkey work globally (currently only works when menu is open)
-- [ ] Clean up code
 - [ ] Optimize memory consumption
 - [ ] Add v1 release

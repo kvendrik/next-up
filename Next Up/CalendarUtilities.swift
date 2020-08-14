@@ -118,6 +118,13 @@ struct CalendarUtilities {
         return nil
     }
     
+    func parseLocationForEventLabel(_ location: String?) -> String? {
+        if let parts = location?.components(separatedBy: ", ") {
+            return " ("+parts[0]+")"
+        }
+        return nil
+    }
+    
     private func pluralize(_ amount: Int, _ str: String) -> String {
         return amount > 1 ? str+"s" : str;
     }

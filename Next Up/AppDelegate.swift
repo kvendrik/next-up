@@ -18,14 +18,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let utilities = CalendarUtilities()
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let store = EKEventStore()
-    private let userDefaults: UserDefaults = UserDefaults()
+    private let dataStore = DataStore()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         statusItem.button?.target = self
         utilities.requestCalendarAccess(store: store, onAccess:  {
             DispatchQueue.main.async {
                 let calendars = self.store.calendars(for: .event)
-                let selectedCalendars = self.getSelectedCalendars(calendars)
+                let selectedCalendars = self.dataStore.getSelectedCalendars(calendars, defaultCalendarId: self.store.defaultCalendarForNewEvents?.calendarIdentifier)
 
                 let calendarsMenu = self.constructCalendarsMenu(calendars: calendars, selectedCalendars: selectedCalendars)
                 
@@ -49,26 +49,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
     }
     
-    private func getSelectedCalendars(_ calendars: [EKCalendar]) -> [EKCalendar] {
-        if let selectedCalendarIds = self.userDefaults.stringArray(forKey: "selectedCalendars") {
-            return calendars.filter { (calendar: EKCalendar) -> Bool in
-                selectedCalendarIds.contains(where: {$0 == calendar.calendarIdentifier})
-            }
-        }
-        
-        if let defaultCalendarId = self.store.defaultCalendarForNewEvents?.calendarIdentifier {
-            if let defaultCalendar = calendars.first(where: { $0.calendarIdentifier == defaultCalendarId }) {
-                return [defaultCalendar]
-            }
-        }
-        
-        return []
-    }
-    
-    private func setSelectedCalendars(_ calendars: [EKCalendar]) {
-        userDefaults.set(calendars.map { $0.calendarIdentifier }, forKey: "selectedCalendars")
-    }
-    
     @objc private func handleCalendarUpdate() {
         let events = utilities.getEventsForRestOfDay(calendars: selectedCalendars!, store: self.store)
         switchToCalendar(selectedCalendars!, events: events)
@@ -81,7 +61,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         let prettyTime = utilities.prettyTimeUntilEvent(event!)
-        let locationLabel = parseLocation(event?.location) ?? ""
+        let locationLabel = utilities.parseLocationForEventLabel(event?.location) ?? ""
         
         statusItem.button?.title = (event?.title ?? "")+prettyTime+locationLabel
     }
@@ -125,7 +105,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.events = events
         self.nextEvent = nextEvent
         
-        setSelectedCalendars(calendars)
+        dataStore.setSelectedCalendars(calendars)
     }
     
     @objc private func joinNextEventMeetingUrl(_ item: NSMenuItem) {
@@ -225,7 +205,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let time = dateFormatter.string(from: event.startDate)
             let meetingUrl = utilities.getHangoutsLinkFromEvent(event)
             
-            let locationLabel = parseLocation(event.location) ?? ""
+            let locationLabel = utilities.parseLocationForEventLabel(event.location) ?? ""
             let item = NSMenuItem(title: time+" - "+event.title+locationLabel, action: meetingUrl == nil ? #selector(openGoogleCalendar) : #selector(openEventMeetingUrl), keyEquivalent: "")
 
             item.representedObject = ["type": "event", "meetingUrl": meetingUrl as Any]
@@ -234,13 +214,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         return menuItems
-    }
-    
-    private func parseLocation(_ location: String?) -> String? {
-        if let parts = location?.components(separatedBy: ", ") {
-            return " ("+parts[0]+")"
-        }
-        return nil
     }
     
     private func constructCalendarsMenu(calendars: [EKCalendar], selectedCalendars: [EKCalendar]) -> NSMenu {
@@ -257,8 +230,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return calendarsMenu
     }
     
-    @IBAction private func openEventMeetingUrl(_ item: NSMenuItem) {
-        if let details = item.representedObject as? Dictionary<String, Any> {
+    @IBAction private func openEventMeetingUrl(_ eventMenuItem: NSMenuItem) {
+        if let details = eventMenuItem.representedObject as? Dictionary<String, Any> {
             if let meetingUrl = details["meetingUrl"] as? URL {
                 NSWorkspace.shared.open(meetingUrl)
             }
