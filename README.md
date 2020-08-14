@@ -10,12 +10,12 @@
 
 ## How is this different from [Up Next](https://ellen.li/up-next/)?
 - Added multi-calendar support
+- Added Open at Login option
 - Remembers selected calendars between startups
 - Changed when the button text changes to the next event to 1/3 of the event's duration (e.g. if your current event takes 1 hour then the app will show the next event in the button after 20 minutes)
 - Left out the "Present via Google Meet" option
 
 ## Roadmap
-- [ ] Add open at startup option
 - [ ] Make Command + J hotkey work globally (currently only works when menu is open)
 - [ ] Optimize memory consumption
 - [ ] Add v1 release
