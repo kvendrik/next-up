@@ -6,12 +6,6 @@
 //  Copyright © 2020 Koen Vendrik. All rights reserved.
 //
 
-// TODO:
-// - X Add location to events
-// - Add Join hangout shortcut for current ongoing event
-// - Optimize perf (no unneccesary runs or checks in timer, also do we need the timer?)
-// - Learn about testing
-
 import EventKit
 import Cocoa
 

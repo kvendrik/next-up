@@ -6,7 +6,7 @@
 
 ![Top bar with menu showing that display all meetings for the day](assets/preview.png)
 
-[Download](next-up.zip?raw=true)
+[Download](https://github.com/kvendrik/next-up/releases/download/1.0.0-alpha.1/Next.Up.zip)
 
 ## How is this different from [Up Next](https://ellen.li/up-next/)?
 - Added multi-calendar support
