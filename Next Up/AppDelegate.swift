@@ -19,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let store = EKEventStore()
     private let dataStore = DataStore()
+    private let autoLaunchManager = AutoLaunchManager()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         statusItem.button?.target = self
@@ -169,12 +170,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         menu.addItem(calendarsItem)
         menu.setSubmenu(calendarsMenu, for: calendarsItem)
+        
+        let preferencesItem = NSMenuItem(title: "Preferences", action: nil, keyEquivalent: "")
+        let preferencesMenu = constructPreferencesMenu()
+
+        menu.addItem(preferencesItem)
+        menu.setSubmenu(preferencesMenu, for: preferencesItem)
 
         menu.addItem(NSMenuItem.separator())
+
         menu.addItem(NSMenuItem(title: "About Next Up", action: #selector(openAboutLink), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: ""))
         
         return menu
+    }
+    
+    private func constructPreferencesMenu() -> NSMenu {
+        let preferencesMenu = NSMenu()
+
+        let openAtLoginItem = NSMenuItem(title: "Open at Login", action: #selector(toggleOpenAtLogin), keyEquivalent: "")
+        openAtLoginItem.state = autoLaunchManager.autoLaunchEnabled() ? .on : .off
+        preferencesMenu.addItem(openAtLoginItem)
+        
+        return preferencesMenu
+    }
+    
+    @objc private func toggleOpenAtLogin() {
+        if let item = statusItem.menu?.item(withTitle: "Preferences")?.submenu?.item(withTitle: "Open at Login") {
+            let autoLaunchEnabled = autoLaunchManager.autoLaunchEnabled()
+            item.state = autoLaunchEnabled ? .off : .on
+            autoLaunchManager.setAutoLaunchEnabled(autoLaunchEnabled ? false : true)
+        }
     }
     
     @objc private func quitApplication() {
