@@ -19,3 +19,10 @@
 - [ ] Make Command + J hotkey work globally (currently only works when menu is open)
 - [ ] Optimize memory consumption
 - [ ] Add v1 release
+
+## Contibuting
+1. Fork & clone this repository
+1. `carthage build` to install dependencies
+1. Open `Next Up.xcodeproj` in Xcode
+1. Make your changes
+1. Open up a PR

@@ -11,6 +11,8 @@
 		6712AF742440F2370059714F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6712AF722440F2370059714F /* Main.storyboard */; };
 		6756C3AB244140C200CE9E8B /* CalendarUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756C3AA244140C200CE9E8B /* CalendarUtilities.swift */; };
 		67BD0E4924E5DA580023D3D9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67BD0E4824E5DA580023D3D9 /* Assets.xcassets */; };
+		67CDF16624E722E100CBF1AC /* LaunchAtLogin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67CDF16424E722E100CBF1AC /* LaunchAtLogin.framework */; };
+		67CDF16724E722E100CBF1AC /* LaunchAtLogin.framework.dSYM in Resources */ = {isa = PBXBuildFile; fileRef = 67CDF16524E722E100CBF1AC /* LaunchAtLogin.framework.dSYM */; };
 		67D9439E24E7131500147778 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67D9439D24E7131500147778 /* DataStore.swift */; };
 /* End PBXBuildFile section */
 
@@ -22,6 +24,8 @@
 		6712AF762440F2370059714F /* Next Up.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Next Up.entitlements"; sourceTree = "<group>"; };
 		6756C3AA244140C200CE9E8B /* CalendarUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarUtilities.swift; sourceTree = "<group>"; };
 		67BD0E4824E5DA580023D3D9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		67CDF16424E722E100CBF1AC /* LaunchAtLogin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LaunchAtLogin.framework; path = Carthage/Build/Mac/LaunchAtLogin.framework; sourceTree = "<group>"; };
+		67CDF16524E722E100CBF1AC /* LaunchAtLogin.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = LaunchAtLogin.framework.dSYM; path = Carthage/Build/Mac/LaunchAtLogin.framework.dSYM; sourceTree = "<group>"; };
 		67D9439D24E7131500147778 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -30,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				67CDF16624E722E100CBF1AC /* LaunchAtLogin.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,6 +44,8 @@
 		6712AF602440F2360059714F = {
 			isa = PBXGroup;
 			children = (
+				67CDF16424E722E100CBF1AC /* LaunchAtLogin.framework */,
+				67CDF16524E722E100CBF1AC /* LaunchAtLogin.framework.dSYM */,
 				6712AF6B2440F2360059714F /* Next Up */,
 				6712AF6A2440F2360059714F /* Products */,
 			);
@@ -76,6 +83,8 @@
 				6712AF652440F2360059714F /* Sources */,
 				6712AF662440F2360059714F /* Frameworks */,
 				6712AF672440F2360059714F /* Resources */,
+				67CDF16324E7222600CBF1AC /* Embed Frameworks */,
+				67CDF16824E7230A00CBF1AC /* LaunchAtLogin */,
 			);
 			buildRules = (
 			);
@@ -126,10 +135,52 @@
 			files = (
 				67BD0E4924E5DA580023D3D9 /* Assets.xcassets in Resources */,
 				6712AF742440F2370059714F /* Main.storyboard in Resources */,
+				67CDF16724E722E100CBF1AC /* LaunchAtLogin.framework.dSYM in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		67CDF16324E7222600CBF1AC /* Embed Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/Mac/LaunchAtLogin.framework",
+			);
+			name = "Embed Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/LaunchAtLogin.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
+		67CDF16824E7230A00CBF1AC /* LaunchAtLogin */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = LaunchAtLogin;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}/Carthage/Build/Mac/LaunchAtLogin.framework/Resources/copy-helper.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		6712AF652440F2360059714F /* Sources */ = {
@@ -277,12 +328,17 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = "Next Up/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = "1.0.0-alpha";
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kvendrik.UpNext;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -297,12 +353,17 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = "Next Up/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = "1.0.0-alpha";
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kvendrik.UpNext;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

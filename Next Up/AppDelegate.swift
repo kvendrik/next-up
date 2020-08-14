@@ -8,6 +8,7 @@
 
 import EventKit
 import Cocoa
+import LaunchAtLogin
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -169,12 +170,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         menu.addItem(calendarsItem)
         menu.setSubmenu(calendarsMenu, for: calendarsItem)
+        
+        let preferencesItem = NSMenuItem(title: "Preferences", action: nil, keyEquivalent: "")
+        let preferencesMenu = constructPreferencesMenu()
+
+        menu.addItem(preferencesItem)
+        menu.setSubmenu(preferencesMenu, for: preferencesItem)
 
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "About Next Up", action: #selector(openAboutLink), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApplication), keyEquivalent: ""))
         
         return menu
+    }
+    
+    private func constructPreferencesMenu() -> NSMenu {
+        let preferencesMenu = NSMenu()
+
+        let openAtLoginItem = NSMenuItem(title: "Open at Login", action: #selector(toggleOpenAtLogin), keyEquivalent: "")
+        openAtLoginItem.state = LaunchAtLogin.isEnabled ? .on : .off
+        preferencesMenu.addItem(openAtLoginItem)
+        
+        return preferencesMenu
+    }
+    
+    @objc private func toggleOpenAtLogin() {
+        if let item = statusItem.menu?.item(withTitle: "Preferences")?.submenu?.item(withTitle: "Open at Login") {
+            let autoLaunchEnabled = LaunchAtLogin.isEnabled
+            item.state = autoLaunchEnabled ? .off : .on
+            LaunchAtLogin.isEnabled = autoLaunchEnabled ? false : true
+        }
     }
     
     @objc private func quitApplication() {
