@@ -16,9 +16,7 @@
 - Left out the "Present via Google Meet" option
 
 ## Roadmap
-- [ ] Make Command + J hotkey work globally (currently only works when menu is open)
 - [ ] Optimize memory consumption
-- [ ] Add v1 release
 
 ## Contibuting
 1. Fork & clone this repository

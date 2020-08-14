@@ -9,10 +9,10 @@
 /* Begin PBXBuildFile section */
 		6712AF6D2440F2360059714F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6712AF6C2440F2360059714F /* AppDelegate.swift */; };
 		6712AF742440F2370059714F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6712AF722440F2370059714F /* Main.storyboard */; };
+		6718C81F24E7416300225661 /* LaunchAtLogin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6718C81D24E7416300225661 /* LaunchAtLogin.framework */; };
+		6718C82124E7416300225661 /* HotKey.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6718C81E24E7416300225661 /* HotKey.framework */; };
 		6756C3AB244140C200CE9E8B /* CalendarUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6756C3AA244140C200CE9E8B /* CalendarUtilities.swift */; };
 		67BD0E4924E5DA580023D3D9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67BD0E4824E5DA580023D3D9 /* Assets.xcassets */; };
-		67CDF16624E722E100CBF1AC /* LaunchAtLogin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67CDF16424E722E100CBF1AC /* LaunchAtLogin.framework */; };
-		67CDF16724E722E100CBF1AC /* LaunchAtLogin.framework.dSYM in Resources */ = {isa = PBXBuildFile; fileRef = 67CDF16524E722E100CBF1AC /* LaunchAtLogin.framework.dSYM */; };
 		67D9439E24E7131500147778 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67D9439D24E7131500147778 /* DataStore.swift */; };
 /* End PBXBuildFile section */
 
@@ -22,10 +22,10 @@
 		6712AF732440F2370059714F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6712AF752440F2370059714F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6712AF762440F2370059714F /* Next Up.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Next Up.entitlements"; sourceTree = "<group>"; };
+		6718C81D24E7416300225661 /* LaunchAtLogin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LaunchAtLogin.framework; path = Carthage/Build/Mac/LaunchAtLogin.framework; sourceTree = "<group>"; };
+		6718C81E24E7416300225661 /* HotKey.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HotKey.framework; path = Carthage/Build/Mac/HotKey.framework; sourceTree = "<group>"; };
 		6756C3AA244140C200CE9E8B /* CalendarUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarUtilities.swift; sourceTree = "<group>"; };
 		67BD0E4824E5DA580023D3D9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		67CDF16424E722E100CBF1AC /* LaunchAtLogin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LaunchAtLogin.framework; path = Carthage/Build/Mac/LaunchAtLogin.framework; sourceTree = "<group>"; };
-		67CDF16524E722E100CBF1AC /* LaunchAtLogin.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = LaunchAtLogin.framework.dSYM; path = Carthage/Build/Mac/LaunchAtLogin.framework.dSYM; sourceTree = "<group>"; };
 		67D9439D24E7131500147778 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -34,7 +34,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				67CDF16624E722E100CBF1AC /* LaunchAtLogin.framework in Frameworks */,
+				6718C82124E7416300225661 /* HotKey.framework in Frameworks */,
+				6718C81F24E7416300225661 /* LaunchAtLogin.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,10 +45,9 @@
 		6712AF602440F2360059714F = {
 			isa = PBXGroup;
 			children = (
-				67CDF16424E722E100CBF1AC /* LaunchAtLogin.framework */,
-				67CDF16524E722E100CBF1AC /* LaunchAtLogin.framework.dSYM */,
 				6712AF6B2440F2360059714F /* Next Up */,
 				6712AF6A2440F2360059714F /* Products */,
+				6718C81C24E7416200225661 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,6 +71,15 @@
 				67D9439D24E7131500147778 /* DataStore.swift */,
 			);
 			path = "Next Up";
+			sourceTree = "<group>";
+		};
+		6718C81C24E7416200225661 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6718C81E24E7416300225661 /* HotKey.framework */,
+				6718C81D24E7416300225661 /* LaunchAtLogin.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,7 +144,6 @@
 			files = (
 				67BD0E4924E5DA580023D3D9 /* Assets.xcassets in Resources */,
 				6712AF742440F2370059714F /* Main.storyboard in Resources */,
-				67CDF16724E722E100CBF1AC /* LaunchAtLogin.framework.dSYM in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,12 +159,14 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/Mac/LaunchAtLogin.framework",
+				"$(SRCROOT)/Carthage/Build/Mac/HotKey.framework",
 			);
 			name = "Embed Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/LaunchAtLogin.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/HotKey.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

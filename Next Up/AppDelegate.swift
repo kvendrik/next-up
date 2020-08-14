@@ -9,6 +9,7 @@
 import EventKit
 import Cocoa
 import LaunchAtLogin
+import HotKey
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -20,6 +21,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let store = EKEventStore()
     private let dataStore = DataStore()
+    
+    private var hotKey: HotKey? {
+        didSet {
+            guard let hotKey = hotKey else {
+                return
+            }
+
+            hotKey.keyDownHandler = {
+                self.joinNextEventMeetingUrl()
+            }
+        }
+    }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         statusItem.button?.target = self
@@ -37,6 +50,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.selectedCalendars = selectedCalendars
                 self.switchToCalendar(selectedCalendars, events: events)
                 NotificationCenter.default.addObserver(self, selector: #selector(self.handleCalendarUpdate), name: .EKEventStoreChanged, object: self.store)
+
+                self.hotKey = HotKey(keyCombo: KeyCombo(key: .j, modifiers: [.command]))
             }
         }, onError: {
             DispatchQueue.main.async {
@@ -48,6 +63,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.quitApplication()
             }
         })
+    }
+    
+    func applicationWillTerminate() {
+        hotKey = nil
     }
     
     @objc private func handleCalendarUpdate() {
@@ -109,13 +128,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dataStore.setSelectedCalendars(calendars)
     }
     
-    @objc private func joinNextEventMeetingUrl(_ item: NSMenuItem) {
+    @objc private func joinNextEventMeetingUrl() {
         if (nextEvent == nil) {
             return
         }
         
-        let meetingUrl = utilities.getHangoutsLinkFromEvent(nextEvent!)!
-        NSWorkspace.shared.open(meetingUrl)
+        if let meetingUrl = utilities.getHangoutsLinkFromEvent(nextEvent!) {
+            NSWorkspace.shared.open(meetingUrl)
+        }
     }
     
     private func getNextEventValidationTimer(_ interval: Double) -> Timer {
