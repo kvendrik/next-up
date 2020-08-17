@@ -16,6 +16,8 @@
 - Left out the "Present via Google Meet" option
 
 ## Roadmap
+- [ ] Fix timestamps (right now we use UTC to check for next events even when you're in a different timezone, this breaks next event detection)
+- [ ] Support for overlapping events (if you have an event that runs from 10am to 5pm and one that runs from 11am to 12 then the 10am one is priotized)
 - [ ] Optimize memory consumption
 
 ## Contibuting
